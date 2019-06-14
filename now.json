@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "builds": [{ "src": "api/**/*.js", "use": "@now/node" }],
+  "routes": [
+    {
+      "src": "/api/projects",
+      "methods": ["GET"],
+      "dest": "/api/projects/list"
+    },
+    {
+      "src": "/api/projects",
+      "methods": ["POST", "PUT"],
+      "dest": "/api/projects/create"
+    },
+    {
+      "src": "/api/projects/:project/events",
+      "methods": ["GET"],
+      "dest": "/api/events/list"
+    },
+    {
+      "src": "/api/:project/store",
+      "methods": ["POST"],
+      "dest": "/api/events/create"
+    }
+  ]
+}
