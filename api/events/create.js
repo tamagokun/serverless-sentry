@@ -1,7 +1,5 @@
-const { json } = require("micro");
-
 module.exports = async (req, res) => {
-  const body = await json(req);
+  const body = req.body;
 
   // rate-limit? do we need to?
 

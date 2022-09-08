@@ -1,9 +1,17 @@
 const { parse } = require("url");
+const db = require("../db");
 
 module.exports = async (req, res) => {
   const { pathname } = parse(req.url, true);
   const [_, projectId] = pathname.split("/");
 
-  // fetch events based on project id
-  // return list
+  const events = await db
+    .query({
+      TableName: "sentry",
+      KeyConditionExpression: "projectId = :i",
+      ExpressionAttributeValues: { ":i": projectId }
+    })
+    .promise();
+
+  res.status(200).json(events);
 };

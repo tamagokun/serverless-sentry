@@ -1,11 +1,15 @@
 {
   "version": 2,
   "builds": [{ "src": "api/**/*.js", "use": "@now/node" }],
+  "env": {
+    "AWS_DB_KEY": "@ripeworks-aws-key",
+    "AWS_DB_SECRET": "@ripeworks-aws-secret"
+  },
   "routes": [
     {
       "src": "/api/projects",
       "methods": ["GET"],
-      "dest": "/api/projects/list"
+      "dest": "/api/projects/list.js"
     },
     {
       "src": "/api/projects",

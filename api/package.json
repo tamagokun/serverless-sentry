@@ -5,6 +5,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "micro": "^9.3.4"
+    "aws-sdk": "^2.495.0",
+    "uuid": "^3.3.2"
   }
 }
