@@ -1,0 +1,17 @@
+<!doctype html>
+<head>
+    <script
+  src="https://cdn.ravenjs.com/3.26.4/raven.min.js"
+  crossorigin="anonymous"
+></script>
+<script>
+    Raven.config("https://examplePublicKey@ripeworks-error-reporting.vercel.app/0").install();
+  </script>
+  <script>
+    throw new Error("BOOM")
+  </script>
+</head>
+<body>
+
+
+</body>
