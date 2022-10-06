@@ -1,0 +1,36 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider             = "mysql"
+  url                  = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  name        String
+  secureToken String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  events Event[]
+}
+
+model Event {
+  id          Int      @id @default(autoincrement())
+  projectId   Int
+  message     String
+  stack       String?
+  meta        Json?
+  count       Int      @default(0)
+  createdAt   DateTime @default(now())
+  lastEventAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id])
+}
