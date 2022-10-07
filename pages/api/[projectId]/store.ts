@@ -48,6 +48,8 @@ type RavenPostBody = {
 function getBody(body: any) {
   let parsedBody = body;
 
+  console.log("DEBUG", body);
+
   if (typeof body === "string") {
     const tests = [
       () => body,
