@@ -50,7 +50,9 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
 
   console.log(req.body);
   const body: RavenPostBody =
-    typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+    typeof req.body === "string"
+      ? JSON.parse(Buffer.from(req.body, "base64").toString("utf8"))
+      : req.body;
   const { event_id, exception, extra, logger, platform, breadcrumbs } = body;
   const { sentry_client, sentry_version, sentry_key, projectId } = req.query;
   const message = exception.values?.[0].value;
