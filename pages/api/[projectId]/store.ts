@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../db";
 import type { Readable } from "node:stream";
+import zlib from "node:zlib";
 
 type RavenPostBody = {
   event_id: string;
@@ -48,11 +49,16 @@ function getBody(body: any) {
   let parsedBody = body;
 
   if (typeof body === "string") {
-    try {
-      parsedBody = JSON.parse(body);
-    } catch (err) {
+    const tests = [
+      body,
+      zlib.inflateSync(body).toString(),
+      Buffer.from(body, "base64").toString("utf8"),
+    ];
+
+    for (const testString of tests) {
       try {
-        parsedBody = JSON.parse(Buffer.from(body, "base64").toString("utf8"));
+        parsedBody = JSON.parse(testString);
+        return parsedBody;
       } catch (err) {
         parsedBody = null;
       }
@@ -76,8 +82,12 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).end();
 
   const rawBody = (await buffer(req)).toString("utf8");
-  console.log(rawBody);
   const body: RavenPostBody = getBody(rawBody);
+  if (!body) {
+    console.log(rawBody);
+    return res.status(400).end("Unable to decode body");
+  }
+
   const { event_id, exception, extra, logger, platform, breadcrumbs } = body;
   const { sentry_client, sentry_version, sentry_key, projectId } = req.query;
   const message = exception.values?.[0].value;
