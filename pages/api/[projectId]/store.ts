@@ -84,6 +84,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).end();
 
+  console.log(req.headers);
   const rawBody = (await buffer(req)).toString("utf8");
   const body: RavenPostBody = getBody(rawBody);
   if (!body) {
