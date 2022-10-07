@@ -60,6 +60,7 @@ function getBody(body: any) {
         parsedBody = JSON.parse(testString());
         return parsedBody;
       } catch (err) {
+        console.log(err);
         parsedBody = null;
       }
     }
