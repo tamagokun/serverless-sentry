@@ -13,20 +13,21 @@ datasource db {
 }
 
 model Project {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   name        String
   secureToken String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  clientToken String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt
 
   events Event[]
 }
 
 model Event {
-  id          Int      @id @default(autoincrement())
+  id          String   @id
   projectId   Int
   message     String
-  stack       String?
+  stack       Json?
   meta        Json?
   count       Int      @default(0)
   createdAt   DateTime @default(now())
