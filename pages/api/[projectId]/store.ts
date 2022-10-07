@@ -53,6 +53,8 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
     platform,
   };
 
+  // TODO check clientToken/secureToken in query OR in Auth header
+
   const existing = await prisma.event.findFirst({
     where: { message, projectId: Number(projectId) },
   });
