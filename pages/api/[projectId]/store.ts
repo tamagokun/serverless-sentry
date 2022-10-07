@@ -51,7 +51,7 @@ function getBody(body: any) {
   if (typeof body === "string") {
     const tests = [
       () => body,
-      () => zlib.inflateSync(Buffer.from(body, "base64")).toString(),
+      () => zlib.inflateSync(body).toString(),
       () => Buffer.from(body, "base64").toString("utf8"),
     ];
 
