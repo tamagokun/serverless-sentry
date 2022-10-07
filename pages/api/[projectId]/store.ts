@@ -33,6 +33,14 @@ type RavenPostBody = {
     url: string;
   };
   transaction: string;
+  breadcrumbs?: {
+    values: {
+      category: string;
+      timestamp: number;
+      message?: string;
+      data?: Record<string, any>;
+    }[];
+  };
 };
 
 // /api/0/store/?sentry_version&sentry_client&sentry_key
@@ -40,12 +48,14 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).end();
 
-  const { event_id, exception, extra, logger, platform } =
-    req.body as RavenPostBody;
+  const body: RavenPostBody =
+    typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+  const { event_id, exception, extra, logger, platform, breadcrumbs } = body;
   const { sentry_client, sentry_version, sentry_key, projectId } = req.query;
   const message = exception.values?.[0].value;
   const stacktrace = exception.values?.[0].stacktrace;
   const meta = {
+    breadcrumbs,
     sentry_client,
     sentry_version,
     extra,
