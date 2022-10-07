@@ -50,14 +50,14 @@ function getBody(body: any) {
 
   if (typeof body === "string") {
     const tests = [
-      body,
-      zlib.inflateSync(Buffer.from(body, "base64")).toString(),
-      Buffer.from(body, "base64").toString("utf8"),
+      () => body,
+      () => zlib.inflateSync(Buffer.from(body, "base64")).toString(),
+      () => Buffer.from(body, "base64").toString("utf8"),
     ];
 
     for (const testString of tests) {
       try {
-        parsedBody = JSON.parse(testString);
+        parsedBody = JSON.parse(testString());
         return parsedBody;
       } catch (err) {
         parsedBody = null;
