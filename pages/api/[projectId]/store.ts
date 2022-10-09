@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../db";
 import type { Readable } from "node:stream";
 import zlib from "node:zlib";
+import bodyParser from "body-parser";
 
 type RavenPostBody = {
   event_id: string;
@@ -81,22 +82,37 @@ async function buffer(readable: Readable) {
   return Buffer.concat(chunks);
 }
 
+function runMiddleware(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  fn: Function
+) {
+  return new Promise((resolve, reject) => {
+    fn(req, res, (result: any) => {
+      if (result instanceof Error) {
+        return reject(result);
+      }
+
+      return resolve(result);
+    });
+  });
+}
+
 // /api/0/store/?sentry_version&sentry_client&sentry_key
-export default async function (req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).end();
 
+  await runMiddleware(req, res, bodyParser.text({ type: "*/*", limit: "1mb" }));
+
   console.log(req.headers["content-encoding"]);
   console.log(req.headers["content-type"]);
+  console.log(req.body);
 
-  const decoded = await new Promise((resolve) => {
-    zlib.gunzip(req.body, (err, decoded) => {
-      resolve(decoded.toString("utf-8"));
-    });
-  });
-
-  console.log(decoded);
-  const body: RavenPostBody = JSON.parse(decoded as string);
+  const body: RavenPostBody = JSON.parse(req.body);
 
   //   const bodyBuffer = await buffer(req);
   //   const rawBody = bodyBuffer.toString("utf-8");
