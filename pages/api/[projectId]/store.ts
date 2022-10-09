@@ -92,7 +92,10 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
 
   //   console.log(zlib.inflateSync(bodyBuffer).toString());
 
-  const body: RavenPostBody = getBody(rawBody);
+  const body: RavenPostBody = getBody(
+    rawBody,
+    req.headers["content-encoding"] ?? ""
+  );
   if (!body) {
     // console.log(rawBody);
     return res.status(400).end("Unable to decode body");
