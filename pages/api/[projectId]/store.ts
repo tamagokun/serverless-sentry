@@ -61,7 +61,7 @@ function getBody(body: Buffer) {
       parsedBody = JSON.parse(stringValue);
       return parsedBody;
     } catch (err) {
-      // console.log(err);
+      console.log(err);
       parsedBody = null;
     }
   }
