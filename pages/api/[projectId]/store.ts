@@ -88,15 +88,17 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
 
   console.log(req.headers["content-encoding"]);
   console.log(req.headers["content-type"]);
+  console.log(req.body);
+  const body = null;
 
   //   console.log(req.headers);
-  const bodyBuffer = await buffer(req);
-  const rawBody = bodyBuffer.toString("utf-8");
+  //   const bodyBuffer = await buffer(req);
+  //   const rawBody = bodyBuffer.toString("utf-8");
 
-  const body: RavenPostBody = getBody(
-    rawBody,
-    req.headers["content-encoding"] ?? ""
-  );
+  //   const body: RavenPostBody = getBody(
+  //     rawBody,
+  //     req.headers["content-encoding"] ?? ""
+  //   );
   if (!body) {
     // console.log(rawBody);
     return res.status(400).end("Unable to decode body");
@@ -146,8 +148,8 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   return res.json({ success: true });
 }
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+// export const config = {
+//   api: {
+//     bodyParser: false,
+//   },
+// };
