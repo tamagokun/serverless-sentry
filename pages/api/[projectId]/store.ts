@@ -62,7 +62,7 @@ function getBody(body: any) {
         parsedBody = JSON.parse(testString());
         return parsedBody;
       } catch (err) {
-        console.log(err);
+        // console.log(err);
         parsedBody = null;
       }
     }
@@ -88,7 +88,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   const rawBody = (await buffer(req)).toString("utf8");
   const body: RavenPostBody = getBody(rawBody);
   if (!body) {
-    console.log(rawBody);
+    // console.log(rawBody);
     return res.status(400).end("Unable to decode body");
   }
 
