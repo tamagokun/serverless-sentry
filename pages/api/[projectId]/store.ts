@@ -96,7 +96,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   const { event_id, exception, extra, logger, platform, breadcrumbs } = body;
   const { sentry_client, sentry_version, sentry_key, projectId } = req.query;
   const message = exception?.values?.[0].value ?? body.message ?? "Error";
-  const stacktrace = exception.values?.[0].stacktrace;
+  const stacktrace = exception?.values?.[0].stacktrace;
   const meta = {
     breadcrumbs,
     sentry_client,
