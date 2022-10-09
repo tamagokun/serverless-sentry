@@ -5,7 +5,7 @@ import zlib from "node:zlib";
 
 type RavenPostBody = {
   event_id: string;
-  exception: {
+  exception?: {
     mechanism: {
       type: "onerror";
       handled: boolean;
@@ -28,6 +28,7 @@ type RavenPostBody = {
     "session:duration"?: number;
   };
   logger: string;
+  message?: string;
   platform: string;
   project: string;
   request: {
@@ -51,7 +52,6 @@ function getBody(body: string) {
   const tests = [
     () => body,
     () => zlib.inflateSync(Buffer.from(body, "base64")).toString(),
-    // () => zlib.inflateRawSync(body).toString(),
     // () => body.toString("utf8"), // raw json
     // () => zlib.inflateSync(body).toString(),
     // () => body.toString("base64"),
@@ -60,7 +60,7 @@ function getBody(body: string) {
   for (const testString of tests) {
     try {
       const stringValue = testString();
-      //   console.log(stringValue);
+      console.log(stringValue);
       parsedBody = JSON.parse(stringValue);
       return parsedBody;
     } catch (err) {
@@ -75,9 +75,7 @@ function getBody(body: string) {
 async function buffer(readable: Readable) {
   const chunks = [];
   for await (const chunk of readable) {
-    chunks.push(
-      typeof chunk === "string" ? Buffer.from(chunk, "base64") : chunk
-    );
+    chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
   }
   return Buffer.concat(chunks);
 }
@@ -97,7 +95,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
 
   const { event_id, exception, extra, logger, platform, breadcrumbs } = body;
   const { sentry_client, sentry_version, sentry_key, projectId } = req.query;
-  const message = exception.values?.[0].value;
+  const message = exception?.values?.[0].value ?? body.message ?? "Error";
   const stacktrace = exception.values?.[0].stacktrace;
   const meta = {
     breadcrumbs,
