@@ -1,7 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../db";
-import type { Readable } from "node:stream";
-import zlib from "node:zlib";
 import bodyParser from "body-parser";
 
 type RavenPostBody = {
@@ -47,41 +45,6 @@ type RavenPostBody = {
   };
 };
 
-function getBody(body: string, encoding: string) {
-  let parser;
-
-  switch (encoding) {
-    case "gzip": {
-      parser = () => zlib.gunzipSync(Buffer.from(body, "base64")).toString();
-      break;
-    }
-    case "deflate": {
-      parser = () => zlib.inflateSync(Buffer.from(body, "base64")).toString();
-      break;
-    }
-    default: {
-      parser = () => body;
-    }
-  }
-
-  try {
-    const stringValue = parser();
-    console.log(stringValue);
-    return JSON.parse(stringValue);
-  } catch (err) {
-    console.log(err);
-    return null;
-  }
-}
-
-async function buffer(readable: Readable) {
-  const chunks = [];
-  for await (const chunk of readable) {
-    chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
-  }
-  return Buffer.concat(chunks);
-}
-
 function runMiddleware(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -107,22 +70,11 @@ export default async function handler(
   if (req.method !== "POST") return res.status(405).end();
 
   await runMiddleware(req, res, bodyParser.text({ type: "*/*", limit: "1mb" }));
+  let body: RavenPostBody;
 
-  console.log(req.headers["content-encoding"]);
-  console.log(req.headers["content-type"]);
-  console.log(req.body);
-
-  const body: RavenPostBody = JSON.parse(req.body);
-
-  //   const bodyBuffer = await buffer(req);
-  //   const rawBody = bodyBuffer.toString("utf-8");
-
-  //   const body: RavenPostBody = getBody(
-  //     rawBody,
-  //     req.headers["content-encoding"] ?? ""
-  //   );
-  if (!body) {
-    // console.log(rawBody);
+  try {
+    body = JSON.parse(req.body);
+  } catch (err) {
     return res.status(400).end("Unable to decode body");
   }
 
@@ -130,6 +82,7 @@ export default async function handler(
   const { sentry_client, sentry_version, sentry_key, projectId } = req.query;
   const message = exception?.values?.[0].value ?? body.message ?? "";
   const stacktrace = exception?.values?.[0].stacktrace;
+  const type = exception ? "EXCEPTION" : "MESSAGE";
   const meta = {
     breadcrumbs,
     sentry_client,
@@ -162,6 +115,7 @@ export default async function handler(
         projectId: Number(projectId),
         message,
         meta,
+        type,
         stack: stacktrace,
       },
     });
