@@ -89,15 +89,14 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   console.log(req.headers["content-encoding"]);
   console.log(req.headers["content-type"]);
 
-  const chunks = [];
-  const gunzip = zlib.createGunzip();
-  req.body.pipe(gunzip);
-  for await (const chunk of gunzip) {
-    chunks.push(chunk);
-  }
-  const rawBody = Buffer.concat(chunks).toString("base64");
-  console.log(rawBody);
-  const body: RavenPostBody = JSON.parse(rawBody);
+  const decoded = await new Promise((resolve) => {
+    zlib.gunzip(req.body, (err, decoded) => {
+      resolve(decoded.toString("utf-8"));
+    });
+  });
+
+  console.log(decoded);
+  const body: RavenPostBody = JSON.parse(decoded as string);
 
   //   const bodyBuffer = await buffer(req);
   //   const rawBody = bodyBuffer.toString("utf-8");
