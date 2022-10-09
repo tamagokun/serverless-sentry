@@ -51,7 +51,9 @@ function getBody(body: string) {
 
   const tests = [
     () => body,
-    () => zlib.inflateSync(Buffer.from(body, "base64")).toString(),
+    () => {
+      return zlib.inflateSync(Buffer.from(body, "base64")).toString();
+    },
     // () => body.toString("utf8"), // raw json
     // () => zlib.inflateSync(body).toString(),
     // () => body.toString("base64"),
@@ -60,11 +62,11 @@ function getBody(body: string) {
   for (const testString of tests) {
     try {
       const stringValue = testString();
-      console.log(stringValue);
+      //   console.log(stringValue);
       parsedBody = JSON.parse(stringValue);
       return parsedBody;
     } catch (err) {
-      console.log(err);
+      //   console.log(err);
       parsedBody = null;
     }
   }
@@ -85,8 +87,15 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).end();
 
+  console.log(req.headers["content-encoding"]);
+  console.log(req.headers["content-type"]);
+
   //   console.log(req.headers);
-  const rawBody = (await buffer(req)).toString("utf-8");
+  const bodyBuffer = await buffer(req);
+  const rawBody = bodyBuffer.toString("utf-8");
+
+  //   console.log(zlib.inflateSync(bodyBuffer).toString());
+
   const body: RavenPostBody = getBody(rawBody);
   if (!body) {
     // console.log(rawBody);
@@ -95,7 +104,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
 
   const { event_id, exception, extra, logger, platform, breadcrumbs } = body;
   const { sentry_client, sentry_version, sentry_key, projectId } = req.query;
-  const message = exception?.values?.[0].value ?? body.message ?? "Error";
+  const message = exception?.values?.[0].value ?? body.message ?? "";
   const stacktrace = exception?.values?.[0].stacktrace;
   const meta = {
     breadcrumbs,
