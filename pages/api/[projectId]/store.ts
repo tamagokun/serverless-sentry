@@ -45,13 +45,16 @@ type RavenPostBody = {
   };
 };
 
-function getBody(body: Buffer) {
+function getBody(body: string) {
   let parsedBody = null;
 
   const tests = [
-    () => body.toString("utf8"), // raw json
-    () => zlib.inflateSync(body).toString(),
-    () => body.toString("base64"),
+    () => body,
+    () => zlib.inflateSync(Buffer.from(body, "base64")).toString(),
+    // () => zlib.inflateRawSync(body).toString(),
+    // () => body.toString("utf8"), // raw json
+    // () => zlib.inflateSync(body).toString(),
+    // () => body.toString("base64"),
   ];
 
   for (const testString of tests) {
@@ -72,7 +75,9 @@ function getBody(body: Buffer) {
 async function buffer(readable: Readable) {
   const chunks = [];
   for await (const chunk of readable) {
-    chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+    chunks.push(
+      typeof chunk === "string" ? Buffer.from(chunk, "base64") : chunk
+    );
   }
   return Buffer.concat(chunks);
 }
@@ -83,7 +88,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") return res.status(405).end();
 
   //   console.log(req.headers);
-  const rawBody = await buffer(req);
+  const rawBody = (await buffer(req)).toString("utf-8");
   const body: RavenPostBody = getBody(rawBody);
   if (!body) {
     // console.log(rawBody);
