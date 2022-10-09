@@ -51,13 +51,13 @@ function getBody(body: Buffer) {
   const tests = [
     () => body.toString("utf8"), // raw json
     () => zlib.inflateSync(body).toString(),
-    // () => Buffer.from(body, "base64").toString("utf8"),
+    () => buffer.toString("base64"),
   ];
 
   for (const testString of tests) {
     try {
       const stringValue = testString();
-      console.log(stringValue);
+      //   console.log(stringValue);
       parsedBody = JSON.parse(stringValue);
       return parsedBody;
     } catch (err) {
@@ -82,7 +82,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).end();
 
-  console.log(req.headers);
+  //   console.log(req.headers);
   const rawBody = await buffer(req);
   const body: RavenPostBody = getBody(rawBody);
   if (!body) {
