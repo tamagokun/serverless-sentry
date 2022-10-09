@@ -88,10 +88,17 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
 
   console.log(req.headers["content-encoding"]);
   console.log(req.headers["content-type"]);
-  console.log(req.body);
-  const body = null;
 
-  //   console.log(req.headers);
+  const chunks = [];
+  const gunzip = zlib.createGunzip();
+  req.body.pipe(gunzip);
+  for await (const chunk of gunzip) {
+    chunks.push(chunk);
+  }
+  const rawBody = Buffer.concat(chunks).toString("base64");
+  console.log(rawBody);
+  const body: RavenPostBody = JSON.parse(rawBody);
+
   //   const bodyBuffer = await buffer(req);
   //   const rawBody = bodyBuffer.toString("utf-8");
 
@@ -148,8 +155,8 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   return res.json({ success: true });
 }
 
-// export const config = {
-//   api: {
-//     bodyParser: false,
-//   },
-// };
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
