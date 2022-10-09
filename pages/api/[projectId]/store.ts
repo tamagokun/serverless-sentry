@@ -64,8 +64,11 @@ function getBody(body: string, encoding: string) {
   }
 
   try {
-    return JSON.parse(parser());
+    const stringValue = parser();
+    console.log(stringValue);
+    return JSON.parse(stringValue);
   } catch (err) {
+    console.log(err);
     return null;
   }
 }
@@ -89,8 +92,6 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   //   console.log(req.headers);
   const bodyBuffer = await buffer(req);
   const rawBody = bodyBuffer.toString("utf-8");
-
-  //   console.log(zlib.inflateSync(bodyBuffer).toString());
 
   const body: RavenPostBody = getBody(
     rawBody,
