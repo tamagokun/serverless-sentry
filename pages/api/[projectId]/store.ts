@@ -46,32 +46,28 @@ type RavenPostBody = {
   };
 };
 
-function getBody(body: string) {
-  let parsedBody = null;
+function getBody(body: string, encoding: string) {
+  let parser;
 
-  const tests = [
-    () => body,
-    () => {
-      return zlib.inflateSync(Buffer.from(body, "base64")).toString();
-    },
-    // () => body.toString("utf8"), // raw json
-    // () => zlib.inflateSync(body).toString(),
-    // () => body.toString("base64"),
-  ];
-
-  for (const testString of tests) {
-    try {
-      const stringValue = testString();
-      //   console.log(stringValue);
-      parsedBody = JSON.parse(stringValue);
-      return parsedBody;
-    } catch (err) {
-      //   console.log(err);
-      parsedBody = null;
+  switch (encoding) {
+    case "gzip": {
+      parser = () => zlib.gunzipSync(Buffer.from(body, "base64")).toString();
+      break;
+    }
+    case "deflate": {
+      parser = () => zlib.inflateSync(Buffer.from(body, "base64")).toString();
+      break;
+    }
+    default: {
+      parser = () => body;
     }
   }
 
-  return parsedBody;
+  try {
+    return JSON.parse(parser());
+  } catch (err) {
+    return null;
+  }
 }
 
 async function buffer(readable: Readable) {
