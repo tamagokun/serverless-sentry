@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../db";
 import bodyParser from "body-parser";
-import querystring from "querystring";
 
 type RavenPostBody = {
   event_id: string;
