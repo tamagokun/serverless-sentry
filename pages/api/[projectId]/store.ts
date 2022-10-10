@@ -95,6 +95,8 @@ export default async function handler(
   // TODO check clientToken/secureToken in query OR in Auth header
   console.log(req.query);
   console.log(req.headers.authorization);
+  console.log(req.headers["X-Sentry-Auth"]);
+  console.log(req.headers["x-sentry-auth"]);
 
   const existing = await prisma.event.findFirst({
     where: { message, projectId: Number(projectId) },
