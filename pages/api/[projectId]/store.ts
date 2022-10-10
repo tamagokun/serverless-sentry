@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../db";
 import bodyParser from "body-parser";
+import querystring from "querystring";
 
 type RavenPostBody = {
   event_id: string;
@@ -61,6 +62,18 @@ function runMiddleware(
   });
 }
 
+function parseAuthString(authString: string) {
+  // format: Sentry sentry_version=7,sentry_client=sentry-cocoa/5.2.2,sentry_timestamp=1665405863,sentry_key=xxx,sentry_secret=xxx
+  return authString
+    .slice(7)
+    .split(",")
+    .reduce<Record<string, string>>((obj, pair) => {
+      const [key, value] = pair.split("=");
+      obj[key] = value;
+      return obj;
+    }, {});
+}
+
 // /api/0/store/?sentry_version&sentry_client&sentry_key
 export default async function handler(
   req: NextApiRequest,
@@ -79,7 +92,13 @@ export default async function handler(
   }
 
   const { event_id, exception, extra, logger, platform, breadcrumbs } = body;
-  const { sentry_client, sentry_version, sentry_key, projectId } = req.query;
+  const { projectId } = req.query;
+
+  const sentryQuery = req.headers["x-sentry-auth"]
+    ? parseAuthString(String(req.headers["x-sentry-auth"]))
+    : req.query;
+  const { sentry_client, sentry_version, sentry_key, sentry_secret } =
+    sentryQuery;
   const message = exception?.values?.[0].value ?? body.message ?? "";
   const stacktrace = exception?.values?.[0].stacktrace;
   const type = exception ? "EXCEPTION" : "MESSAGE";
@@ -92,11 +111,7 @@ export default async function handler(
     platform,
   };
 
-  // TODO check clientToken/secureToken in query OR in Auth header
-  console.log(req.query);
-  console.log(req.headers.authorization);
-  console.log(req.headers["X-Sentry-Auth"]);
-  console.log(req.headers["x-sentry-auth"]);
+  // TODO make sure sentry_key/sentry_secret match project
 
   const existing = await prisma.event.findFirst({
     where: { message, projectId: Number(projectId) },
