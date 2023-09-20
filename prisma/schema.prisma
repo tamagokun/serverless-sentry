@@ -42,3 +42,13 @@ model Event {
 
   @@index([projectId, lastEventAt(sort: Desc)])
 }
+
+model Token {
+  token     String    @unique
+  name      String
+  active    Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@index([token, active])
+}
