@@ -35,3 +35,5 @@ export default function Project() {
     </main>
   );
 }
+
+Project.auth = true;

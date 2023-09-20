@@ -24,3 +24,5 @@ export default function Index() {
     </main>
   );
 }
+
+Index.auth = true;
