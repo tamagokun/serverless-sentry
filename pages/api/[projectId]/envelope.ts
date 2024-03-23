@@ -163,6 +163,8 @@ export default async function handler(
   };
 
   // TODO make sure sentry_key/sentry_secret match project
+  // TODO better fingerprinting for event "count" metrics
+  // TODO do we want to support perf metrics? i.e. transactions?
 
   const existing = await prisma.event.findFirst({
     // where: { message, projectId: Number(projectId) },
