@@ -117,8 +117,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  console.log("LOGGING HERE");
-  console.log("HELLO?!", req.method);
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).end();
 
@@ -167,7 +165,8 @@ export default async function handler(
   // TODO make sure sentry_key/sentry_secret match project
 
   const existing = await prisma.event.findFirst({
-    where: { message, projectId: Number(projectId) },
+    // where: { message, projectId: Number(projectId) },
+    where: { id: event_id, projectId: Number(projectId) },
   });
 
   if (existing) {
