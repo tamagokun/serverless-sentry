@@ -1,5 +1,5 @@
 module.exports = {
-  trailingSlash: true,
+  skipTrailingSlashRedirect: true,
   async headers() {
     return [
       {
