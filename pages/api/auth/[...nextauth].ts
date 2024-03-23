@@ -3,11 +3,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "../../../db";
 
 export const authOptions = {
-  pages: {
-    signIn: "/auth/signin/",
-    signOut: "/auth/signout/",
-    error: "/auth/error/",
-  },
   providers: [
     CredentialsProvider({
       name: "Credentials",
