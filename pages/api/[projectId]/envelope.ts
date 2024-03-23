@@ -120,7 +120,7 @@ export default async function handler(
   if (req.method === "OPTIONS") return res.status(200).end();
   if (req.method !== "POST") return res.status(405).end();
 
-  await runMiddleware(req, res, bodyParser.text({ type: "*/*", limit: "1mb" }));
+  await runMiddleware(req, res, bodyParser.text({ type: "*/*", limit: "2mb" }));
   let body: SentryPostBody;
 
   try {
