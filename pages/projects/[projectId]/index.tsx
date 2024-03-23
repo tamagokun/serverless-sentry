@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { eventsForProject } from "../../../api";
+import { eventsForProject } from "../../../utils/api";
 import { useRouter } from "next/router";
 
 export default function Project() {

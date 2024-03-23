@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 import { useQuery } from "react-query";
-import { allProjects } from "../api";
+import { allProjects } from "../utils/api";
 import Link from "next/link";
 
 export default function Index() {
