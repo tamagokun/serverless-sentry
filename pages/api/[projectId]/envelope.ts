@@ -135,7 +135,7 @@ export default async function handler(
     return res.status(400).end("Unable to decode body");
   }
 
-  const ignoreTypes = ["session", "client_report"];
+  const ignoreTypes = ["session", "client_report", "transaction"];
 
   const { event_id, platform, release, breadcrumbs, tags, type, exception } =
     body;
