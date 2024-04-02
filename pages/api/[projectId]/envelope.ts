@@ -1,7 +1,9 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { prisma } from "../../../db";
+import { db } from "../../../db";
 import bodyParser from "body-parser";
 import { runMiddleware, parseAuthString } from "../../../utils/server";
+import { and, eq } from "drizzle-orm";
+import { event } from "../../../db/schema";
 
 type SentryPostBody = {
   event_id: string;
@@ -139,29 +141,27 @@ export default async function handler(
   // TODO better fingerprinting for event "count" metrics
   // TODO do we want to support perf metrics? i.e. transactions?
 
-  const existing = await prisma.event.findFirst({
-    // where: { message, projectId: Number(projectId) },
-    where: { id: event_id, projectId: Number(projectId) },
+  const existing = await db.query.event.findFirst({
+    where: and(eq(event.id, event_id), eq(event.projectId, Number(projectId))),
   });
 
   if (existing) {
-    await prisma.event.update({
-      where: { id: existing.id },
-      data: {
+    await db
+      .update(event)
+      .set({
         count: existing.count + 1,
-        lastEventAt: new Date(),
-      },
-    });
+        lastEventAt: new Date().toISOString(),
+        resolvedAt: null,
+      })
+      .where(eq(event.id, existing.id));
   } else {
-    await prisma.event.create({
-      data: {
-        id: event_id,
-        projectId: Number(projectId),
-        message,
-        meta,
-        type: eventType,
-        stack: stacktrace,
-      },
+    await db.insert(event).values({
+      id: event_id,
+      projectId: Number(projectId),
+      message,
+      meta,
+      type: eventType,
+      stack: stacktrace,
     });
   }
 

@@ -1,6 +1,8 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { prisma } from "../../../db";
+import { db } from "../../../db";
+import { and, eq } from "drizzle-orm";
+import { token } from "../../../db/schema";
 
 export const authOptions = {
   providers: [
@@ -10,15 +12,15 @@ export const authOptions = {
         token: { label: "Token", type: "password" },
       },
       async authorize(credentials, req) {
-        const token = await prisma.token.findFirst({
-          where: {
-            token: credentials.token,
-            active: true,
-          },
+        const row = await db.query.token.findFirst({
+          where: and(
+            eq(token.token, credentials.token),
+            eq(token.active, true)
+          ),
         });
 
-        if (token) {
-          return { id: token.token, name: token.name };
+        if (row) {
+          return { id: row.token, name: row.name };
         } else {
           return null;
         }
