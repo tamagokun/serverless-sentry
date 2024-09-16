@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { db } from "../../../../db";
+import { db } from "../../../../../db";
 import { and, eq } from "drizzle-orm";
-import { event } from "../../../../db/schema";
+import { event } from "../../../../../db/schema";
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
   // TODO check token

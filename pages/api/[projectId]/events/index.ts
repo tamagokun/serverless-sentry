@@ -5,6 +5,7 @@ import { event } from "../../../../db/schema";
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
   // TODO check token
+  // TODO filter out resolved events
 
   const { projectId, pageSize = 50, page = 1 } = req.query;
 
