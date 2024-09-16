@@ -1,4 +1,4 @@
-import { StackFrame } from "../types";
+import { StackFrame } from "../app-types";
 
 type Props = {
   stack: StackFrame[];

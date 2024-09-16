@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import { runMiddleware, parseAuthString } from "../../../utils/server";
 import { and, eq } from "drizzle-orm";
 import { event } from "../../../db/schema";
-import { Breadcrumb, StackFrame } from "../../../types";
+import { Breadcrumb, StackFrame } from "../../../app-types";
 
 type SentryPostBody = {
   event_id: string;

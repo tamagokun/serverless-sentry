@@ -1,4 +1,4 @@
-import { Breadcrumb } from "../types";
+import { Breadcrumb } from "../app-types";
 import { displayTimestamp } from "../utils/time";
 
 type Props = {
