@@ -14,22 +14,26 @@ export default function Project() {
 
   return (
     <main className="px-4 py-12 lg:px-8">
-      <ul role="list" className="divide-y dividr-gray-100">
+      <ul role="list" className="divide-y divide-gray-200">
         {events?.data.map((event) => (
-          <Link key={event.id} href={`/projects/${projectId}/${event.id}`}>
-            <li className="flex items-center justify-between gap-x-6 py-5">
-              <div className="flex">
+          <li key={event.id}>
+            <Link
+              href={`/projects/${projectId}/${event.id}`}
+              className="flex items-center justify-between gap-x-6 py-5"
+            >
+              <div className="flex-1">
                 <p className="text-sm font-semibold leading-6 text-gray-900">
                   {event.message}
                 </p>
               </div>
-              <div className="flex">
+              <div>{event.count}</div>
+              <div>
                 <p className="text-xs leading-5 text-gray-500">
-                  Last seen on: <time>{event.lastEventAt}</time>
+                  Last seen <time>{event.lastEventAt}</time>
                 </p>
               </div>
-            </li>
-          </Link>
+            </Link>
+          </li>
         ))}
       </ul>
     </main>

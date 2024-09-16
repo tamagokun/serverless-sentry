@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import { runMiddleware, parseAuthString } from "../../../utils/server";
 import { and, eq } from "drizzle-orm";
 import { event } from "../../../db/schema";
+import { Breadcrumb, StackFrame } from "../../../types";
 
 type SentryPostBody = {
   event_id: string;
@@ -59,24 +60,13 @@ type SentryPostBody = {
   };
   environment: string;
   release: string;
-  breadcrumbs: {
-    timestamp: number;
-    category: string;
-    data: Record<string, any>;
-    type?: string;
-  }[];
+  breadcrumbs: Breadcrumb[];
   exception?: {
     values: {
       type: string;
       value: string;
       stacktrace: {
-        frames: {
-          filename: string;
-          function: string;
-          in_app: boolean;
-          lineno: number;
-          colno: number;
-        }[];
+        frames: StackFrame[];
       };
       mechanism: {
         type: string;
