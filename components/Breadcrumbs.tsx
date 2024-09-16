@@ -13,7 +13,9 @@ export default function Breadcrumbs({ breadcrumbs }: Props) {
           <summary>
             <div className="flex flex-row items-start justify-between gap-4">
               <div className="text-sm text-gray-600">{crumb.category}</div>
-              <div className="text-sm flex-1">{crumb.message}</div>
+              <div className="text-sm flex-1 text-gray-800 font-mono">
+                {crumb.message}
+              </div>
               <div className="text-xs text-gray-600">
                 {displayTimestamp(crumb.timestamp)}
               </div>
