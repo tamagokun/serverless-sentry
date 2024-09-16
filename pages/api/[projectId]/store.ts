@@ -95,12 +95,14 @@ export default async function handler(
     await db
       .update(event)
       .set({
+        // @ts-ignore
         count: existing.count + 1,
         lastEventAt: new Date().toISOString(),
         resolvedAt: null,
       })
       .where(eq(event.id, existing.id));
   } else {
+    // @ts-ignore
     await db.insert(event).values({
       id: event_id,
       projectId: Number(projectId),
