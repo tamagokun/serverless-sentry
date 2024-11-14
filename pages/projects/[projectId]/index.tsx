@@ -23,7 +23,7 @@ export default function Project() {
             >
               <div className="flex-1">
                 <p className="text-sm font-semibold leading-6 text-gray-900">
-                  {event.message}
+                  {event.message || event.type}
                 </p>
               </div>
               <div>{event.count}</div>

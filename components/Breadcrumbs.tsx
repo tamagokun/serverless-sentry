@@ -16,9 +16,11 @@ export default function Breadcrumbs({ breadcrumbs }: Props) {
               <div className="text-sm flex-1 text-gray-800 font-mono">
                 {crumb.message}
               </div>
-              <div className="text-xs text-gray-600">
-                {displayTimestamp(crumb.timestamp)}
-              </div>
+              {!!crumb.timestamp && (
+                <div className="text-xs text-gray-600">
+                  {displayTimestamp(crumb.timestamp)}
+                </div>
+              )}
             </div>
           </summary>
           <div>
