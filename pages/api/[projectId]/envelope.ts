@@ -105,7 +105,9 @@ export default async function handler(
   const { event_id, platform, release, breadcrumbs, tags, type, exception } =
     body;
   const { projectId } = req.query;
-  console.log("envelope", body);
+  if (Number(projectId) === 5) {
+    console.log("envelope", body);
+  }
 
   if (ignoreTypes.includes(type)) {
     return res.json({ success: true });
