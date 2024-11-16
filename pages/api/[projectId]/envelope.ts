@@ -105,6 +105,7 @@ export default async function handler(
   const { event_id, platform, release, breadcrumbs, tags, type, exception } =
     body;
   const { projectId } = req.query;
+  console.log("envelope", body);
 
   if (ignoreTypes.includes(type)) {
     return res.json({ success: true });
@@ -115,7 +116,8 @@ export default async function handler(
     : req.query;
   const { sentry_client, sentry_version, sentry_key, sentry_secret } =
     sentryQuery;
-  const message = exception?.values?.[0].value ?? "";
+  // @ts-ignore
+  const message = exception?.values?.[0].value ?? body.message ?? "";
   const stacktrace = exception?.values?.[0].stacktrace;
   const eventType = exception ? "EXCEPTION" : "MESSAGE";
   const meta = {
