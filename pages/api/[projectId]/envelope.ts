@@ -47,6 +47,9 @@ type SentryPostBody = {
     trace_id: string;
     origin: string;
   }[];
+  level?: string;
+  user?: any;
+  message?: string;
   start_timestamp: number;
   tags: Record<string, any>;
   timestamp: number;
@@ -118,7 +121,6 @@ export default async function handler(
     : req.query;
   const { sentry_client, sentry_version, sentry_key, sentry_secret } =
     sentryQuery;
-  // @ts-ignore
   const message = exception?.values?.[0].value ?? body.message ?? "";
   const stacktrace = exception?.values?.[0].stacktrace;
   const eventType = exception ? "EXCEPTION" : "MESSAGE";

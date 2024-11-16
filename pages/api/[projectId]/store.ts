@@ -67,9 +67,6 @@ export default async function handler(
 
   const { event_id, exception, extra, logger, platform, breadcrumbs } = body;
   const { projectId } = req.query;
-  if (Number(projectId) === 5) {
-    console.log("store", body);
-  }
 
   const sentryQuery = req.headers["x-sentry-auth"]
     ? parseAuthString(String(req.headers["x-sentry-auth"]))
